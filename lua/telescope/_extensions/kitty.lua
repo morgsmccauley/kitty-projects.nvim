@@ -11,19 +11,34 @@ local config = require('telescope._extensions.config')
 local kitty_projects = function(opts)
   opts = opts or {}
 
+  local projects = {};
+  for _, workspace in ipairs(config.workspaces) do
+    if type(workspace) == 'table' then
+      local dir = workspace[1]
+      local results = utils.get_os_command_output({ 'ls', dir })
+      local full_paths = vim.tbl_map(function(basename)
+        return dir .. '/' .. basename
+      end, results)
+      projects = vim.tbl_extend('force', projects, full_paths)
+    else
+      table.insert(projects, workspace)
+    end
+  end
+
   pickers.new(opts, {
     prompt_title = 'Kitty Projects',
-    finder = finders.new_oneshot_job(
-      { 'ls', config.project_dir },
+    finder = finders.new_table(
       {
+        results = projects,
         entry_maker = function(line)
+          local basename = vim.fn.fnamemodify(line, ':t')
           return {
             value = {
-              basename = line,
-              absolute_path = config.project_dir .. '/' .. line,
+              basename = basename,
+              absolute_path = line,
             },
-            ordinal = line,
-            display = line,
+            ordinal = basename,
+            display = basename,
           }
         end,
       }
