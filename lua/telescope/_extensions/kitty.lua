@@ -6,21 +6,21 @@ local finders = require 'telescope.finders'
 local conf = require('telescope.config').values
 local utils = require('telescope.utils')
 
+local config = require('telescope._extensions.config')
+
 local kitty_projects = function(opts)
   opts = opts or {}
-
-  local project_dir = vim.env.HOME .. '/Developer/Repositories'
 
   pickers.new(opts, {
     prompt_title = 'Kitty Projects',
     finder = finders.new_oneshot_job(
-      { 'ls', project_dir },
+      { 'ls', config.project_dir },
       {
         entry_maker = function(line)
           return {
             value = {
               basename = line,
-              absolute_path = project_dir .. '/' .. line,
+              absolute_path = config.project_dir .. '/' .. line,
             },
             ordinal = line,
             display = line,
@@ -81,6 +81,9 @@ local kitty_projects = function(opts)
 end
 
 return telescope.register_extension({
+  setup = function(opts)
+    config = opts
+  end,
   exports = {
     projects = kitty_projects
   }
