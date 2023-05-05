@@ -42,18 +42,38 @@ local kitty_projects = function(opts)
         })
         local kitty_windows = vim.json.decode(table.concat(raw_results))
 
-        vim.loop.spawn('kitty', {
-          args = {
-            '@',
-            '--to=unix:/tmp/kitty-' .. vim.env.KITTY_PID,
-            'launch',
-            '--type=tab',
-            '--tab-title=' .. selection.value.basename,
-            '--window-title=' .. selection.value.basename,
-            '--cwd=' .. selection.value.absolute_path,
-            'nvim'
-          }
-        })
+        local tab_exists = false
+        for _, tab in ipairs(kitty_windows[1].tabs) do
+          if tab.title == selection.value.basename then
+            tab_exists = true
+            break
+          end
+        end
+
+        if tab_exists then
+          vim.loop.spawn('kitty', {
+            args = {
+              '@',
+              '--to=unix:/tmp/kitty-' .. vim.env.KITTY_PID,
+              'focus-tab',
+              '--match=title:' .. selection.value.basename,
+            }
+          })
+          return true
+        else
+          vim.loop.spawn('kitty', {
+            args = {
+              '@',
+              '--to=unix:/tmp/kitty-' .. vim.env.KITTY_PID,
+              'launch',
+              '--type=tab',
+              '--tab-title=' .. selection.value.basename,
+              '--window-title=' .. selection.value.basename,
+              '--cwd=' .. selection.value.absolute_path,
+              'nvim'
+            }
+          })
+        end
       end)
       return true
     end,
