@@ -85,7 +85,7 @@ local kitty_projects = function(opts)
               '--tab-title=' .. selection.value.basename,
               '--window-title=' .. selection.value.basename,
               '--cwd=' .. selection.value.absolute_path,
-              'nvim'
+              config.command
             }
           })
         end
