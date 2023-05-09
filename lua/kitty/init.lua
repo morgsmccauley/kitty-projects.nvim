@@ -53,4 +53,32 @@ function M.focus_tab(identifier)
   })
 end
 
+function M.launch_tab(args)
+  local optional_args = {}
+
+  if args.tab_title then
+    table.insert(optional_args, '--tab-title=' .. args.tab_title)
+  end
+
+  if args.window_title then
+    table.insert(optional_args, '--window-title=' .. args.window_title)
+  end
+
+  if args.cwd then
+    table.insert(optional_args, '--cwd=' .. args.cwd)
+  end
+
+  if args.cmd then
+    table.insert(optional_args, args.cmd)
+  end
+
+  return M.send_command(merge(
+    {
+      'launch',
+      '--type=tab'
+    },
+    optional_args
+  ))
+end
+
 return M
