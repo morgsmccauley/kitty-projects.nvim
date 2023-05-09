@@ -6,7 +6,7 @@ local finders = require 'telescope.finders'
 local conf = require('telescope.config').values
 local utils = require('telescope.utils')
 
-local config = require('telescope._extensions.config')
+local config = require('kitty.config')
 local kitty_command = require('kitty.commands')
 
 local list_projects = function(workspaces)
@@ -84,9 +84,6 @@ local kitty_projects = function(opts)
 end
 
 return telescope.register_extension({
-  setup = function(opts)
-    config = opts
-  end,
   exports = {
     projects = kitty_projects
   }
