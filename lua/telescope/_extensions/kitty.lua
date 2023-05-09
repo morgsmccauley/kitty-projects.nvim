@@ -4,39 +4,18 @@ local action_state = require 'telescope.actions.state'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local conf = require('telescope.config').values
-local utils = require('telescope.utils')
 
-local config = require('kitty.config')
 local kitty_command = require('kitty.commands')
+local kitty_projects = require('kitty.projects')
 
-local list_projects = function(workspaces)
-  local projects = {}
-  for _, workspace in ipairs(workspaces) do
-    if type(workspace) == 'table' then
-      local dir = workspace[1]
-      local results = utils.get_os_command_output({ 'ls', dir })
-      local full_paths = vim.tbl_map(function(basename)
-        return dir .. '/' .. basename
-      end, results)
-      projects = vim.tbl_extend('force', projects, full_paths)
-    else
-      table.insert(projects, workspace)
-    end
-  end
-
-  return projects
-end
-
-local kitty_projects = function(opts)
+local list_kitty_projects = function(opts)
   opts = opts or {}
-
-  local projects = list_projects(config.workspaces)
 
   pickers.new(opts, {
     prompt_title = 'Kitty Projects',
     finder = finders.new_table(
       {
-        results = projects,
+        results = kitty_projects.list(),
         entry_maker = function(line)
           local basename = vim.fn.fnamemodify(line, ':t')
           return {
@@ -85,6 +64,6 @@ end
 
 return telescope.register_extension({
   exports = {
-    projects = kitty_projects
+    projects = list_kitty_projects
   }
 })
