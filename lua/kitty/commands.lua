@@ -10,9 +10,7 @@ local merge = function(table1, table2)
 end
 
 function M.send_command(args)
-  local raw_results = nil
-
-  Job:new({
+  local raw_results = Job:new({
     command = 'kitty',
     args = merge(
       {
@@ -21,10 +19,6 @@ function M.send_command(args)
       },
       args
     ),
-    on_exit = function(j)
-      raw_results = j:result()
-    end
-
   }):sync()
 
   if #raw_results > 0 then
