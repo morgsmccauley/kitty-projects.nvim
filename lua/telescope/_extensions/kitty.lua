@@ -8,11 +8,9 @@ local utils = require('telescope.utils')
 
 local config = require('telescope._extensions.config')
 
-local kitty_projects = function(opts)
-  opts = opts or {}
-
-  local projects = {};
-  for _, workspace in ipairs(config.workspaces) do
+local list_projects = function(workspaces)
+  local projects = {}
+  for _, workspace in ipairs(workspaces) do
     if type(workspace) == 'table' then
       local dir = workspace[1]
       local results = utils.get_os_command_output({ 'ls', dir })
@@ -24,6 +22,14 @@ local kitty_projects = function(opts)
       table.insert(projects, workspace)
     end
   end
+
+  return projects
+end
+
+local kitty_projects = function(opts)
+  opts = opts or {}
+
+  local projects = list_projects(config.workspaces)
 
   pickers.new(opts, {
     prompt_title = 'Kitty Projects',
