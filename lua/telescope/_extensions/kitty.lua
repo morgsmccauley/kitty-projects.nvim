@@ -7,7 +7,7 @@ local conf = require('telescope.config').values
 local utils = require('telescope.utils')
 
 local config = require('telescope._extensions.config')
-local kitty = require('kitty')
+local kitty_command = require('kitty.commands')
 
 local list_projects = function(workspaces)
   local projects = {}
@@ -56,7 +56,7 @@ local kitty_projects = function(opts)
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
 
-        local kitty_windows = kitty.list_windows()
+        local kitty_windows = kitty_command.list_windows()
 
         local tab_exists = false
         for _, tab in ipairs(kitty_windows[1].tabs) do
@@ -67,9 +67,9 @@ local kitty_projects = function(opts)
         end
 
         if tab_exists then
-          kitty.focus_tab({ title = selection.value.basename })
+          kitty_command.focus_tab({ title = selection.value.basename })
         else
-          kitty.launch_tab({
+          kitty_command.launch_tab({
             tab_title = selection.value.basename,
             window_title = selection.value.basename,
             cwd = selection.value.absolute_path,
