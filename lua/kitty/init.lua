@@ -27,13 +27,30 @@ function M.send_command(args)
 
   }):sync()
 
-  local decoded_results = vim.json.decode(table.concat(raw_results))
+  if #raw_results > 0 then
+    return vim.json.decode(table.concat(raw_results))
+  end
 
-  return decoded_results
+  return {}
 end
 
 function M.list_windows()
   return M.send_command({ 'ls' })
+end
+
+function M.focus_tab(identifier)
+  local match = nil
+
+  if identifier.title then
+    match = 'title:' .. identifier.title
+  elseif identifier.id then
+    match = 'id:' .. identifier.id
+  end
+
+  return M.send_command({
+    'focus-tab',
+    '--match=' .. match
+  })
 end
 
 return M
