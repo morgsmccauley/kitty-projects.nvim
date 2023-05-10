@@ -61,7 +61,7 @@ function M.launch_tab(args)
     table.insert(optional_args, args.cmd)
   end
 
-  return M.send_command(merge(
+  return M.send_command(utils.merge_tables(
     {
       'launch',
       '--type=tab'

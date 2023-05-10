@@ -1,6 +1,7 @@
 local Job = require('plenary.job')
 
 local config = require('kitty.config')
+local utils = require('kitty.utils')
 
 local M = {}
 
@@ -20,8 +21,7 @@ function M.list()
         return dir .. '/' .. basename
       end, results)
 
-      -- tbl_extend works for key/value tables but weirdly works here, but might be error prone
-      projects = vim.tbl_extend('force', projects, full_paths)
+      projects = utils.merge_tables(projects, full_paths)
     else
       table.insert(projects, workspace)
     end
