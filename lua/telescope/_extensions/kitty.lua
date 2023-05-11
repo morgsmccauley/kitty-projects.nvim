@@ -8,6 +8,7 @@ local conf = require('telescope.config').values
 
 local kitty_command = require('kitty.commands')
 local kitty_projects = require('kitty.projects')
+local state = require('kitty.state')
 
 local list_kitty_projects = function(opts)
   opts = opts or {}
@@ -24,7 +25,7 @@ local list_kitty_projects = function(opts)
   local displayer = entry_display.create {
     separator = " ",
     items = {
-      { width = 1 },
+      { width = 2 },
       { width = max_width },
       { remaining = true },
     },
@@ -36,6 +37,13 @@ local list_kitty_projects = function(opts)
       {
         results = projects,
         entry_maker = function(line)
+          local indicator = ''
+          if line.is_focused then
+            indicator = '%a'
+          elseif line.id then
+            indicator = 'a'
+          end
+
           return {
             value = {
               basename = line.basename,
@@ -44,7 +52,7 @@ local list_kitty_projects = function(opts)
             ordinal = line.basename,
             display = function()
               return displayer({
-                line.id and '*' or '',
+                indicator,
                 line.basename,
                 { line.path, 'TelescopeResultsComment' }
               })
