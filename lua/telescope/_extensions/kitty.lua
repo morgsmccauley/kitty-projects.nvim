@@ -2,6 +2,7 @@ local telescope = require('telescope')
 local actions = require 'telescope.actions'
 local action_state = require 'telescope.actions.state'
 local pickers = require 'telescope.pickers'
+local entry_display = require('telescope.pickers.entry_display')
 local finders = require 'telescope.finders'
 local conf = require('telescope.config').values
 
@@ -11,20 +12,43 @@ local kitty_projects = require('kitty.projects')
 local list_kitty_projects = function(opts)
   opts = opts or {}
 
+  local projects = kitty_projects.list()
+
+  local max_width = 0
+  for _, project in ipairs(projects) do
+    if #project.basename > max_width then
+      max_width = #project.basename
+    end
+  end
+
+  local displayer = entry_display.create {
+    separator = " ",
+    items = {
+      { width = 1 },
+      { width = max_width },
+      { remaining = true },
+    },
+  }
+
   pickers.new(opts, {
     prompt_title = 'Kitty Projects',
     finder = finders.new_table(
       {
-        results = kitty_projects.list(),
+        results = projects,
         entry_maker = function(line)
-          local basename = vim.fn.fnamemodify(line, ':t')
           return {
             value = {
-              basename = basename,
-              absolute_path = line,
+              basename = line.basename,
+              absolute_path = line.path,
             },
-            ordinal = basename,
-            display = basename,
+            ordinal = line.basename,
+            display = function()
+              return displayer({
+                line.id and '*' or '',
+                line.basename,
+                { line.path, 'TelescopeResultsComment' }
+              })
+            end
           }
         end,
       }
