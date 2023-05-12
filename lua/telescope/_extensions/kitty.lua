@@ -40,6 +40,8 @@ local list_kitty_projects = function(opts)
           local indicator = ''
           if line.is_focused then
             indicator = '%a'
+          elseif line.basename == state.get('previous_tab_title') then
+            indicator = '#a'
           elseif line.id then
             indicator = 'a'
           end
