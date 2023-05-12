@@ -40,8 +40,7 @@ local list_kitty_projects = function(opts)
           local indicator = ''
           if project.is_focused then
             indicator = '%a'
-            -- abstract away
-          elseif project.name == state.get('previous_tab_title') then
+          elseif project.was_focused then
             indicator = '#a'
           elseif project.open then
             indicator = 'a'

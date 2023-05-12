@@ -4,6 +4,7 @@ local commands = require('kitty.commands')
 local config = require('kitty.config')
 local utils = require('kitty.utils')
 local Project = require('kitty.project')
+local state = require('kitty.state')
 
 local M = {}
 
@@ -12,6 +13,8 @@ function M.list()
 
   local windows = commands.list_windows()
   local tabs = windows[1].tabs
+
+  local previous_project_name = state.get('previous_project_name')
 
   for _, workspace in ipairs(config.workspaces) do
     if type(workspace) == 'table' then
@@ -32,6 +35,7 @@ function M.list()
             name = basename,
             path = dir .. '/' .. basename,
             is_focused = tab.is_focused and true or false,
+            was_focused = previous_project_name == basename,
             open = tab.id
           })
         end,
@@ -42,10 +46,6 @@ function M.list()
       all_projects = utils.merge_tables(all_projects, projects)
     else
       local basename = vim.fn.fnamemodify(workspace, ':t')
-
-      local tab = utils.find_table_entry(tabs, function(entry)
-        return entry.title == basename
-      end)
 
       table.insert(
         all_projects,
@@ -61,6 +61,9 @@ function M.list()
 end
 
 function M.switch(project)
+  state.set({ previous_project_name = state.get('current_project_name') })
+  state.set({ current_project_name = project.name })
+
   if project.open then
     commands.focus_tab({ title = project.name })
   else

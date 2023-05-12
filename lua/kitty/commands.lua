@@ -1,7 +1,6 @@
 local Job = require('plenary.job')
 
 local utils = require('kitty.utils')
-local state = require('kitty.state')
 
 local M = {}
 
@@ -32,9 +31,6 @@ function M.focus_tab(identifier)
   local match = nil
 
   if identifier.title then
-    state.set({ previous_tab_title = state.get('current_tab_title') })
-    state.set({ current_tab_title = identifier.title })
-
     match = 'title:' .. identifier.title
   elseif identifier.id then
     match = 'id:' .. identifier.id
@@ -64,10 +60,6 @@ function M.launch_tab(args)
   if args.cmd then
     table.insert(optional_args, args.cmd)
   end
-
-  state.set({ previous_tab_title = state.get('current_tab_title') })
-  state.set({ current_tab_title = args.tab_title })
-
 
   return M.send_command(utils.merge_tables(
     {
