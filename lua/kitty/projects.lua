@@ -70,8 +70,7 @@ function M.list()
             is_focused = false,
             was_focused = false,
             open = false
-          })
-          )
+          }))
         end
       end
 
@@ -79,16 +78,45 @@ function M.list()
     else
       local basename = vim.fn.fnamemodify(workspace, ':t')
 
-      table.insert(
-        unopen_projects,
-        Project:new({
+      local tab = utils.find_table_entry(tabs, function(entry)
+        return entry.title == basename
+      end)
+
+      if tab then
+        if tab.is_focused then
+          current_project = Project:new({
+            name = basename,
+            path = workspace,
+            is_focused = true,
+            was_focused = false,
+            open = true
+          })
+        elseif previous_project_name == basename then
+          previous_project = Project:new({
+            name = basename,
+            path = workspace,
+            is_focused = false,
+            was_focused = true,
+            open = true
+          })
+        else
+          table.insert(open_projects, Project:new({
+            name = basename,
+            path = workspace,
+            is_focused = false,
+            was_focused = false,
+            open = true
+          }))
+        end
+      else
+        table.insert(remaining_projects, Project:new({
           name = basename,
           path = workspace,
           is_focused = false,
           was_focused = false,
-          open = false,
-        })
-      )
+          open = false
+        }))
+      end
     end
   end
 
