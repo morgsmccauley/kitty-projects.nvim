@@ -3,6 +3,7 @@ local Job = require('plenary.job')
 local commands = require('kitty.commands')
 local config = require('kitty.config')
 local utils = require('kitty.utils')
+local Project = require('kitty.project')
 
 local M = {}
 
@@ -25,17 +26,14 @@ function M.list()
         function(basename)
           local tab = utils.find_table_entry(tabs, function(entry)
             return entry.title == basename
-          end)
+          end) or {}
 
-          local tmp = vim.tbl_extend(
-            'force',
-            {
-              basename = basename,
-              path = dir .. '/' .. basename,
-            },
-            tab ~= nil and tab or {}
-          )
-          return tmp
+          return Project:new({
+            name = basename,
+            path = dir .. '/' .. basename,
+            is_focused = tab.is_focused and true or false,
+            open = tab.id
+          })
         end,
         sub_directories
       )
@@ -49,14 +47,13 @@ function M.list()
         return entry.title == basename
       end)
 
-      table.insert(all_projects, vim.tbl_extend(
-        'force',
-        {
-          basename = basename,
+      table.insert(
+        all_projects,
+        Project:new({
+          name = basename,
           path = workspace,
-        },
-        tab ~= nil and tab or {}
-      ))
+        })
+      )
     end
   end
 

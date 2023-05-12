@@ -17,8 +17,8 @@ local list_kitty_projects = function(opts)
 
   local max_width = 0
   for _, project in ipairs(projects) do
-    if #project.basename > max_width then
-      max_width = #project.basename
+    if #project.name > max_width then
+      max_width = #project.name
     end
   end
 
@@ -36,27 +36,24 @@ local list_kitty_projects = function(opts)
     finder = finders.new_table(
       {
         results = projects,
-        entry_maker = function(line)
+        entry_maker = function(project)
           local indicator = ''
-          if line.is_focused then
+          if project.is_focused then
             indicator = '%a'
-          elseif line.basename == state.get('previous_tab_title') then
+          elseif project.name == state.get('previous_tab_title') then
             indicator = '#a'
-          elseif line.id then
+          elseif project.open then
             indicator = 'a'
           end
 
           return {
-            value = {
-              basename = line.basename,
-              absolute_path = line.path,
-            },
-            ordinal = line.basename,
+            value = project,
+            ordinal = project.name,
             display = function()
               return displayer({
                 indicator,
-                line.basename,
-                { line.path, 'TelescopeResultsComment' }
+                project.name,
+                { project.path, 'TelescopeResultsComment' }
               })
             end
           }
@@ -68,24 +65,15 @@ local list_kitty_projects = function(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
+        local project = selection.value
 
-        local kitty_windows = kitty_command.list_windows()
-
-        local tab_exists = false
-        for _, tab in ipairs(kitty_windows[1].tabs) do
-          if tab.title == selection.value.basename then
-            tab_exists = true
-            break
-          end
-        end
-
-        if tab_exists then
-          kitty_command.focus_tab({ title = selection.value.basename })
+        if project.open then
+          kitty_command.focus_tab({ title = project.name })
         else
           kitty_command.launch_tab({
-            tab_title = selection.value.basename,
-            window_title = selection.value.basename,
-            cwd = selection.value.absolute_path,
+            tab_title = project.name,
+            window_title = project.name,
+            cwd = project.path,
             -- cmd = config.command
           })
         end
