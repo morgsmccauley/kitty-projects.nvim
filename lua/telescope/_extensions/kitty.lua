@@ -40,6 +40,7 @@ local list_kitty_projects = function(opts)
           local indicator = ''
           if project.is_focused then
             indicator = '%a'
+            -- abstract away
           elseif project.name == state.get('previous_tab_title') then
             indicator = '#a'
           elseif project.open then
@@ -67,16 +68,7 @@ local list_kitty_projects = function(opts)
         local selection = action_state.get_selected_entry()
         local project = selection.value
 
-        if project.open then
-          kitty_command.focus_tab({ title = project.name })
-        else
-          kitty_command.launch_tab({
-            tab_title = project.name,
-            window_title = project.name,
-            cwd = project.path,
-            -- cmd = config.command
-          })
-        end
+        kitty_projects.switch(project)
       end)
 
       return true

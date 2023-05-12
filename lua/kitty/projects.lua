@@ -60,4 +60,17 @@ function M.list()
   return all_projects
 end
 
+function M.switch(project)
+  if project.open then
+    commands.focus_tab({ title = project.name })
+  else
+    commands.launch_tab({
+      tab_title = project.name,
+      window_title = project.name,
+      cwd = project.path,
+      -- cmd = config.command
+    })
+  end
+end
+
 return M
