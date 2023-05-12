@@ -9,12 +9,17 @@ local state = require('kitty.state')
 local M = {}
 
 function M.list()
-  local all_projects = {}
+  local unopen_projects = {}
 
   local windows = commands.list_windows()
   local tabs = windows[1].tabs
 
   local previous_project_name = state.get('previous_project_name')
+
+  local current_project
+  local previous_project
+  local open_projects = {}
+  local remaining_projects = {}
 
   for _, workspace in ipairs(config.workspaces) do
     if type(workspace) == 'table' then
@@ -25,39 +30,83 @@ function M.list()
         args = { dir },
       }):sync()
 
-      local projects = vim.tbl_map(
-        function(basename)
-          local tab = utils.find_table_entry(tabs, function(entry)
-            return entry.title == basename
-          end) or {}
+      remaining_projects = {}
 
-          return Project:new({
+      for _, basename in ipairs(sub_directories) do
+        local tab = utils.find_table_entry(tabs, function(entry)
+          return entry.title == basename
+        end)
+
+        if tab then
+          if tab.is_focused then
+            current_project = Project:new({
+              name = basename,
+              path = dir .. '/' .. basename,
+              is_focused = true,
+              was_focused = false,
+              open = true
+            })
+          elseif previous_project_name == basename then
+            previous_project = Project:new({
+              name = basename,
+              path = dir .. '/' .. basename,
+              is_focused = false,
+              was_focused = true,
+              open = true
+            })
+          else
+            table.insert(open_projects, Project:new({
+              name = basename,
+              path = dir .. '/' .. basename,
+              is_focused = false,
+              was_focused = false,
+              open = true
+            }))
+          end
+        else
+          table.insert(remaining_projects, Project:new({
             name = basename,
             path = dir .. '/' .. basename,
-            is_focused = tab.is_focused,
-            was_focused = previous_project_name == basename,
-            open = tab.id
+            is_focused = false,
+            was_focused = false,
+            open = false
           })
-        end,
-        sub_directories
-      )
+          )
+        end
+      end
 
-
-      all_projects = utils.merge_tables(all_projects, projects)
+      unopen_projects = utils.merge_tables(remaining_projects, unopen_projects)
     else
       local basename = vim.fn.fnamemodify(workspace, ':t')
 
       table.insert(
-        all_projects,
+        unopen_projects,
         Project:new({
           name = basename,
           path = workspace,
+          is_focused = false,
+          was_focused = false,
+          open = false,
         })
       )
     end
   end
 
-  return all_projects
+  local all_projects = {}
+
+  if previous_project then
+    table.insert(all_projects, previous_project)
+  end
+
+  if current_project then
+    table.insert(all_projects, current_project)
+  end
+
+  if #open_projects > 0 then
+    all_projects = utils.merge_tables(all_projects, open_projects)
+  end
+
+  return utils.merge_tables(all_projects, unopen_projects)
 end
 
 function M.switch(project)
