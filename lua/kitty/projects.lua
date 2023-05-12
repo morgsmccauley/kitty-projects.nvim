@@ -34,7 +34,7 @@ function M.list()
           return Project:new({
             name = basename,
             path = dir .. '/' .. basename,
-            is_focused = tab.is_focused and true or false,
+            is_focused = tab.is_focused,
             was_focused = previous_project_name == basename,
             open = tab.id
           })
