@@ -9,8 +9,6 @@ local state = require('kitty.state')
 local M = {}
 
 function M.list()
-  local unopen_projects = {}
-
   local windows = commands.list_windows()
   local tabs = windows[1].tabs
 
@@ -19,64 +17,35 @@ function M.list()
   local current_project
   local previous_project
   local open_projects = {}
-  local remaining_projects = {}
+  local unopen_projects = {}
 
   for _, workspace in ipairs(config.workspaces) do
+    local paths = {}
+
     if type(workspace) == 'table' then
       local dir = workspace[1]
 
-      local sub_directories = Job:new({
-        command = 'ls',
-        args = { dir },
+      vim.print(dir)
+
+      paths = Job:new({
+        command = 'find',
+        args = {
+          dir,
+          '-maxdepth', '1',
+          '-mindepth', '1',
+          '-type', 'd'
+        },
       }):sync()
-
-      remaining_projects = {}
-
-      for _, basename in ipairs(sub_directories) do
-        local tab = utils.find_table_entry(tabs, function(entry)
-          return entry.title == basename
-        end)
-
-        if tab then
-          if tab.is_focused then
-            current_project = Project:new({
-              name = basename,
-              path = dir .. '/' .. basename,
-              is_focused = true,
-              was_focused = false,
-              open = true
-            })
-          elseif previous_project_name == basename then
-            previous_project = Project:new({
-              name = basename,
-              path = dir .. '/' .. basename,
-              is_focused = false,
-              was_focused = true,
-              open = true
-            })
-          else
-            table.insert(open_projects, Project:new({
-              name = basename,
-              path = dir .. '/' .. basename,
-              is_focused = false,
-              was_focused = false,
-              open = true
-            }))
-          end
-        else
-          table.insert(remaining_projects, Project:new({
-            name = basename,
-            path = dir .. '/' .. basename,
-            is_focused = false,
-            was_focused = false,
-            open = false
-          }))
-        end
-      end
-
-      unopen_projects = utils.merge_tables(remaining_projects, unopen_projects)
     else
-      local basename = vim.fn.fnamemodify(workspace, ':t')
+      paths = {
+        workspace
+      }
+    end
+
+    vim.print(paths)
+
+    for _, path in ipairs(paths) do
+      local basename = vim.fn.fnamemodify(path, ':t')
 
       local tab = utils.find_table_entry(tabs, function(entry)
         return entry.title == basename
@@ -86,7 +55,7 @@ function M.list()
         if tab.is_focused then
           current_project = Project:new({
             name = basename,
-            path = workspace,
+            path = path,
             is_focused = true,
             was_focused = false,
             open = true
@@ -94,7 +63,7 @@ function M.list()
         elseif previous_project_name == basename then
           previous_project = Project:new({
             name = basename,
-            path = workspace,
+            path = path,
             is_focused = false,
             was_focused = true,
             open = true
@@ -102,16 +71,16 @@ function M.list()
         else
           table.insert(open_projects, Project:new({
             name = basename,
-            path = workspace,
+            path = path,
             is_focused = false,
             was_focused = false,
             open = true
           }))
         end
       else
-        table.insert(remaining_projects, Project:new({
+        table.insert(unopen_projects, Project:new({
           name = basename,
-          path = workspace,
+          path = path,
           is_focused = false,
           was_focused = false,
           open = false
@@ -159,6 +128,20 @@ function M.switch(project)
       cmd = config.command
     })
   end
+end
+
+function M.get_current_project()
+  local projects = M.list()
+  local cwd = vim.fn.getcwd()
+
+  local projects_with_cwd = vim.tbl_filter(
+    function(project)
+      return project.path == cwd
+    end,
+    projects
+  )
+
+  return projects_with_cwd[1]
 end
 
 return M
