@@ -58,7 +58,9 @@ function M.launch_tab(args)
   end
 
   if args.cmd then
-    table.insert(optional_args, args.cmd)
+    for _, arg in ipairs(vim.fn.split(args.cmd, ' ')) do
+      table.insert(optional_args, arg)
+    end
   end
 
   return M.send_command(utils.merge_tables(

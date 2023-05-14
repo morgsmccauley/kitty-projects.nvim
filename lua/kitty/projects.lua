@@ -156,7 +156,7 @@ function M.switch(project)
       tab_title = project.name,
       window_title = project.name,
       cwd = project.path,
-      -- cmd = config.command
+      cmd = config.command
     })
   end
 end
