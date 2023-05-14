@@ -51,7 +51,7 @@ local list_kitty_projects = function(opts)
               return displayer({
                 indicator,
                 project.name,
-                { project.path, 'TelescopeResultsComment' }
+                { vim.fn.fnamemodify(project.path, ':~'), 'TelescopeResultsComment' }
               })
             end
           }
