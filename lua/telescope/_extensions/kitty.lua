@@ -6,9 +6,7 @@ local entry_display = require('telescope.pickers.entry_display')
 local finders = require 'telescope.finders'
 local conf = require('telescope.config').values
 
-local kitty_command = require('kitty.commands')
 local kitty_projects = require('kitty.projects')
-local state = require('kitty.state')
 
 local list_kitty_projects = function(opts)
   opts = opts or {}
