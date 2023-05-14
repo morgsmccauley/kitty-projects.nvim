@@ -137,6 +137,14 @@ function M.list()
   return utils.merge_tables(all_projects, unopen_projects)
 end
 
+function M.close(project)
+  if not project.open then
+    return
+  end
+
+  commands.close_tab({ title = project.name })
+end
+
 function M.switch(project)
   state.set({ previous_project_name = state.get('current_project_name') })
   state.set({ current_project_name = project.name })

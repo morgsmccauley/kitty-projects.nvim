@@ -59,13 +59,24 @@ local list_kitty_projects = function(opts)
       }
     ),
     sorter = conf.generic_sorter(opts),
-    attach_mappings = function(prompt_bufnr)
+    attach_mappings = function(prompt_bufnr, map)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         local project = selection.value
 
         kitty_projects.switch(project)
+      end)
+
+      map('i', '<C-x>', function()
+        local selection = action_state.get_selected_entry()
+        local project = selection.value
+
+        kitty_projects.close(project)
+
+        -- not quite right
+        local current_picker = action_state.get_current_picker(prompt_bufnr)
+        current_picker:refresh()
       end)
 
       return true

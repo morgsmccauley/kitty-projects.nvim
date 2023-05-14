@@ -70,4 +70,19 @@ function M.launch_tab(args)
   ))
 end
 
+function M.close_tab(identifier)
+  local match = nil
+
+  if identifier.title then
+    match = 'title:' .. identifier.title
+  elseif identifier.id then
+    match = 'id:' .. identifier.id
+  end
+
+  return M.send_command({
+    'close-tab',
+    '--match=' .. match
+  })
+end
+
 return M
