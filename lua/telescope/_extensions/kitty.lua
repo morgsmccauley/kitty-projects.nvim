@@ -11,27 +11,26 @@ local kitty_projects = require('kitty.projects')
 local list_kitty_projects = function(opts)
   opts = opts or {}
 
-  local projects = kitty_projects.list()
+  local make_finder = function()
+    local projects = kitty_projects.list()
 
-  local max_width = 0
-  for _, project in ipairs(projects) do
-    if #project.name > max_width then
-      max_width = #project.name
+    local max_width = 0
+    for _, project in ipairs(projects) do
+      if #project.name > max_width then
+        max_width = #project.name
+      end
     end
-  end
 
-  local displayer = entry_display.create {
-    separator = " ",
-    items = {
-      { width = 2 },
-      { width = max_width },
-      { remaining = true },
-    },
-  }
+    local displayer = entry_display.create {
+      separator = " ",
+      items = {
+        { width = 2 },
+        { width = max_width },
+        { remaining = true },
+      },
+    }
 
-  pickers.new(opts, {
-    prompt_title = 'Kitty Projects',
-    finder = finders.new_table(
+    return finders.new_table(
       {
         results = projects,
         entry_maker = function(project)
@@ -56,8 +55,12 @@ local list_kitty_projects = function(opts)
             end
           }
         end,
-      }
-    ),
+      })
+  end
+
+  pickers.new(opts, {
+    prompt_title = 'Kitty Projects',
+    finder = make_finder(),
     sorter = conf.generic_sorter(opts),
     attach_mappings = function(prompt_bufnr, map)
       actions.select_default:replace(function()
@@ -74,9 +77,8 @@ local list_kitty_projects = function(opts)
 
         kitty_projects.close(project)
 
-        -- not quite right
         local current_picker = action_state.get_current_picker(prompt_bufnr)
-        current_picker:refresh()
+        current_picker:refresh(make_finder())
       end)
 
       return true

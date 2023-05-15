@@ -25,8 +25,6 @@ function M.list()
     if type(workspace) == 'table' then
       local dir = workspace[1]
 
-      vim.print(dir)
-
       paths = Job:new({
         command = 'find',
         args = {
@@ -41,8 +39,6 @@ function M.list()
         workspace
       }
     end
-
-    vim.print(paths)
 
     for _, path in ipairs(paths) do
       local basename = vim.fn.fnamemodify(path, ':t')
