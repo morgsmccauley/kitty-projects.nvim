@@ -9,8 +9,8 @@ local state = require('kitty.state')
 local M = {}
 
 function M.list()
-  local windows = commands.list_windows()
-  local tabs = windows[1].tabs
+  local all_windows = commands.list_windows()
+  local windows = all_windows[1].tabs[1].windows
 
   local previous_project_name = state.get('previous_project_name')
 
@@ -43,12 +43,12 @@ function M.list()
     for _, path in ipairs(paths) do
       local basename = vim.fn.fnamemodify(path, ':t')
 
-      local tab = utils.find_table_entry(tabs, function(entry)
+      local active_window = utils.find_table_entry(windows, function(entry)
         return entry.title == basename
       end)
 
-      if tab then
-        if tab.is_focused then
+      if active_window then
+        if active_window.is_focused then
           current_project = Project:new({
             name = basename,
             path = path,
@@ -115,11 +115,10 @@ function M.switch(project)
   state.set({ current_project_name = project.name })
 
   if project.open then
-    commands.focus_tab({ title = project.name })
+    commands.focus_window({ title = project.name })
   else
-    commands.launch_tab({
-      tab_title = project.name,
-      window_title = project.name,
+    commands.launch_window({
+      title = project.name,
       cwd = project.path,
       cmd = config.command
     })

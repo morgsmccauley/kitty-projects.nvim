@@ -72,6 +72,47 @@ function M.launch_tab(args)
   ))
 end
 
+function M.launch_window(args)
+  local optional_args = {}
+
+  if args.title then
+    table.insert(optional_args, '--title=' .. args.title)
+  end
+
+  if args.cwd then
+    table.insert(optional_args, '--cwd=' .. args.cwd)
+  end
+
+  if args.cmd then
+    for _, arg in ipairs(vim.fn.split(args.cmd, ' ')) do
+      table.insert(optional_args, arg)
+    end
+  end
+
+  return M.send_command(utils.merge_tables(
+    {
+      'launch',
+      '--type=window'
+    },
+    optional_args
+  ))
+end
+
+function M.focus_window(identifier)
+  local match = nil
+
+  if identifier.title then
+    match = 'title:' .. identifier.title
+  elseif identifier.id then
+    match = 'id:' .. identifier.id
+  end
+
+  return M.send_command({
+    'focus-window',
+    '--match=' .. match
+  })
+end
+
 function M.close_tab(identifier)
   local match = nil
 
