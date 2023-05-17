@@ -125,6 +125,15 @@ function M.switch(project)
   end
 end
 
+function M.restart(project)
+  commands.launch_window({
+    title = project.name,
+    cwd = project.path,
+    cmd = config.command
+  })
+  commands.close_window({ recent = 1 })
+end
+
 function M.get_current_project()
   local projects = M.list()
   local cwd = vim.fn.getcwd()

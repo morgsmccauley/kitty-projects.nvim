@@ -113,6 +113,23 @@ function M.focus_window(identifier)
   })
 end
 
+function M.close_window(identifier)
+  local match = nil
+
+  if identifier.recent then
+    match = 'recent:' .. identifier.recent
+  elseif identifier.title then
+    match = 'title:' .. identifier.title
+  elseif identifier.id then
+    match = 'id:' .. identifier.id
+  end
+
+  return M.send_command({
+    'close-window',
+    '--match=' .. match
+  })
+end
+
 function M.close_tab(identifier)
   local match = nil
 

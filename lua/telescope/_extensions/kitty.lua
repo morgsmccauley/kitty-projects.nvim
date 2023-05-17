@@ -81,6 +81,14 @@ local list_kitty_projects = function(opts)
         current_picker:refresh(make_finder())
       end)
 
+      map('i', '<C-r>', function()
+        local selection = action_state.get_selected_entry()
+        local project = selection.value
+
+        actions.close(prompt_bufnr)
+        kitty_projects.restart(project)
+      end)
+
       return true
     end,
   }):find()
