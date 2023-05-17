@@ -107,7 +107,7 @@ function M.close(project)
     return
   end
 
-  commands.close_tab({ title = project.name })
+  commands.close_window({ title = project.name })
 end
 
 function M.switch(project)
