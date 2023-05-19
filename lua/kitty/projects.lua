@@ -126,12 +126,13 @@ function M.switch(project)
 end
 
 function M.restart(project)
-  commands.launch_window({
+  local window_id = commands.launch_window({
     title = project.name,
     cwd = project.path,
     cmd = config.command
   })
-  commands.close_window({ recent = 1 })
+  commands.focus_window({ id = window_id })
+  commands.close_window({ id = vim.env.KITTY_WINDOW_ID })
 end
 
 function M.get_current_project()
