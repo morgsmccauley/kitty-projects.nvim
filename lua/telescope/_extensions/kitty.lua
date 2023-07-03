@@ -71,7 +71,7 @@ local list_kitty_projects = function(opts)
         kitty_projects.switch(project)
       end)
 
-      map('i', '<C-x>', function()
+      local function close_project()
         local selection = action_state.get_selected_entry()
         local project = selection.value
 
@@ -79,15 +79,19 @@ local list_kitty_projects = function(opts)
 
         local current_picker = action_state.get_current_picker(prompt_bufnr)
         current_picker:refresh(make_finder())
-      end)
+      end
 
-      map('i', '<C-r>', function()
+      map('i', '<C-x>', close_project)
+
+      local function restart_project()
         local selection = action_state.get_selected_entry()
         local project = selection.value
 
         actions.close(prompt_bufnr)
         kitty_projects.restart(project)
-      end)
+      end
+
+      map('i', '<C-r>', restart_project)
 
       return true
     end,
