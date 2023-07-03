@@ -44,7 +44,10 @@ function M.start()
 end
 
 function M.save()
+  local tmp = vim.o.sessionoptions
+  vim.o.sessionoptions = table.concat(Config.options.session_opts, ',')
   vim.cmd('mksession! ' .. vim.fn.fnameescape(M.get_current()))
+  vim.o.sessionoptions = tmp
 end
 
 function M.load()
