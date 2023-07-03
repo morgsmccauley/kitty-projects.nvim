@@ -1,10 +1,11 @@
 local config = require('kitty.config')
+local sessions = require('kitty.sessions')
 
 local M = {}
 
 function M.setup(opts)
-  config.command = opts.command
-  config.workspaces = opts.workspaces
+  config.setup(opts)
+  sessions.setup()
 end
 
 return M

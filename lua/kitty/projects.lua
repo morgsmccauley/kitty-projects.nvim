@@ -19,7 +19,7 @@ function M.list()
   local open_projects = {}
   local unopen_projects = {}
 
-  for _, workspace in ipairs(config.workspaces) do
+  for _, workspace in ipairs(config.options.workspaces) do
     local paths = {}
 
     if type(workspace) == 'table' then
@@ -120,7 +120,7 @@ function M.switch(project)
     commands.launch_window({
       title = project.name,
       cwd = project.path,
-      cmd = config.command
+      cmd = config.options.command
     })
   end
 end
@@ -129,7 +129,7 @@ function M.restart(project)
   local window_id = commands.launch_window({
     title = project.name,
     cwd = project.path,
-    cmd = config.command
+    cmd = config.options.command
   })
   commands.focus_window({ id = window_id })
   commands.close_window({ id = vim.env.KITTY_WINDOW_ID })
