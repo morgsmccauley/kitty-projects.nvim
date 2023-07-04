@@ -2,7 +2,7 @@ local M = {}
 
 ---@class KittyOptions
 ---@field command string
----@field workspaces table
+---@field project_paths table
 local defaults = {
   session_dir = vim.fn.expand(vim.fn.stdpath('state') .. '/sessions/'),                           -- directory where session files are saved
   session_opts = { 'buffers', 'curdir', 'folds', 'help', 'tabpages', 'winsize', 'localoptions' }, -- sessionoptions used for saving

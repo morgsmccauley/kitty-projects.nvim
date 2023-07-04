@@ -19,11 +19,11 @@ function M.list()
   local open_projects = {}
   local unopen_projects = {}
 
-  for _, workspace in ipairs(config.options.workspaces) do
+  for _, project_path in ipairs(config.options.project_paths) do
     local paths = {}
 
-    if type(workspace) == 'table' then
-      local dir = workspace[1]
+    if type(project_path) == 'table' then
+      local dir = project_path[1]
 
       paths = Job:new({
         command = 'find',
@@ -36,7 +36,7 @@ function M.list()
       }):sync()
     else
       paths = {
-        workspace
+        project_path
       }
     end
 
