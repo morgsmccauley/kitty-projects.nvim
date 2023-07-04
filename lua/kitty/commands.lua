@@ -1,10 +1,13 @@
 local Job = require('plenary.job')
 
 local utils = require('kitty.utils')
+local log = require('kitty.log')
 
 local M = {}
 
 function M.send_command(args)
+  log.info('Running command: ', args)
+
   local raw_results = Job:new({
     command = 'kitty',
     args = utils.merge_tables(
