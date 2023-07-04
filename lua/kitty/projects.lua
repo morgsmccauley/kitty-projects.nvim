@@ -114,6 +114,17 @@ function M.close(project)
   commands.close_window({ title = project.name })
 end
 
+function M.launch(project)
+  commands.launch_window({
+    title = project.name,
+    cwd = project.path,
+    cmd = config.options.command,
+    env = {
+      KITTY_PROJECTS = '1'
+    }
+  })
+end
+
 function M.switch(project)
   state.set({ previous_project_name = state.get('current_project_name') })
   state.set({ current_project_name = project.name })
@@ -121,20 +132,12 @@ function M.switch(project)
   if project.open then
     commands.focus_window({ title = project.name })
   else
-    commands.launch_window({
-      title = project.name,
-      cwd = project.path,
-      cmd = config.options.command
-    })
+    M.launch(project)
   end
 end
 
 function M.restart(project)
-  commands.launch_window({
-    title = project.name,
-    cwd = project.path,
-    cmd = config.options.command
-  })
+  M.launch(project)
 
   vim.defer_fn(function()
     commands.close_window({ id = vim.env.KITTY_WINDOW_ID })

@@ -86,6 +86,12 @@ function M.launch_window(args)
     table.insert(optional_args, '--cwd=' .. args.cwd)
   end
 
+  if args.env then
+    for key, value in pairs(args.env) do
+      table.insert(optional_args, '--env=' .. key .. '=' .. value)
+    end
+  end
+
   if args.cmd then
     for _, arg in ipairs(vim.fn.split(args.cmd, ' ')) do
       table.insert(optional_args, arg)
