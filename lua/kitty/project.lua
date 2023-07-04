@@ -2,6 +2,7 @@ local Project = {}
 
 function Project:new(args)
   return {
+    id = args.id,
     name = args.name,
     path = args.path,
     is_focused = args.is_focused,

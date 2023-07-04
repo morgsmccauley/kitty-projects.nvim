@@ -50,6 +50,7 @@ function M.list()
       if active_window then
         if active_window.is_focused then
           current_project = Project:new({
+            id = active_window.id,
             name = basename,
             path = path,
             is_focused = true,
@@ -58,6 +59,7 @@ function M.list()
           })
         elseif previous_project_name == basename then
           previous_project = Project:new({
+            id = active_window.id,
             name = basename,
             path = path,
             is_focused = false,
@@ -66,6 +68,7 @@ function M.list()
           })
         else
           table.insert(open_projects, Project:new({
+            id = active_window.id,
             name = basename,
             path = path,
             is_focused = false,
@@ -75,6 +78,7 @@ function M.list()
         end
       else
         table.insert(unopen_projects, Project:new({
+          id = nil,
           name = basename,
           path = path,
           is_focused = false,
