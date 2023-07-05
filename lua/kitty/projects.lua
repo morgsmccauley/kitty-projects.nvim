@@ -1,5 +1,3 @@
-local Job = require('plenary.job')
-
 local commands = require('kitty.commands')
 local config = require('kitty.config')
 local utils = require('kitty.utils')
@@ -8,18 +6,6 @@ local state = require('kitty.state')
 
 local M = {}
 
-local function list_sub_directories(parent_dir)
-  return Job:new({
-    command = 'find',
-    args = {
-      parent_dir,
-      '-maxdepth', '1',
-      '-mindepth', '1',
-      '-type', 'd'
-    },
-  }):sync()
-end
-
 local function list_project_paths()
   local paths = {}
 
@@ -27,7 +13,7 @@ local function list_project_paths()
     if type(path) == 'table' then
       local dir = path[1]
 
-      local sub_directories = list_sub_directories(dir)
+      local sub_directories = utils.list_sub_directories(dir)
 
       utils.merge_tables(paths, sub_directories)
     else

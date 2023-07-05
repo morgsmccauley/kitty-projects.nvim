@@ -1,3 +1,5 @@
+local Job = require('plenary.job')
+
 local M = {}
 
 function M.merge_tables(table1, table2)
@@ -18,6 +20,18 @@ function M.find_table_entry(tbl, test_fn)
   end
 
   return tbl[index]
+end
+
+function M.list_sub_directories(parent_dir)
+  return Job:new({
+    command = 'find',
+    args = {
+      parent_dir,
+      '-maxdepth', '1',
+      '-mindepth', '1',
+      '-type', 'd'
+    },
+  }):sync()
 end
 
 return M
