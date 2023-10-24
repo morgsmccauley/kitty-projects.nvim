@@ -31,7 +31,7 @@ function M.start()
     end,
   })
 
-  vim.api.nvim_create_autocmd({ 'BufEnter ' }, {
+  vim.api.nvim_create_autocmd({ 'BufEnter' }, {
     group = group,
     callback = function()
       if not M.session_loaded then
