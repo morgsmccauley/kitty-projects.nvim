@@ -12,8 +12,9 @@ local function list_project_paths()
   for _, path in ipairs(config.options.project_paths) do
     if type(path) == 'table' then
       local dir = path[1]
+      local exclude_hidden = path.exclude_hidden
 
-      local sub_directories = utils.list_sub_directories(dir)
+      local sub_directories = utils.list_sub_directories(dir, exclude_hidden)
 
       utils.merge_tables(paths, sub_directories)
     else

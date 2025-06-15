@@ -22,15 +22,23 @@ function M.find_table_entry(tbl, test_fn)
   return tbl[index]
 end
 
-function M.list_sub_directories(parent_dir)
+function M.list_sub_directories(parent_dir, exclude_hidden)
+  local args = {
+    parent_dir,
+    '-maxdepth', '1',
+    '-mindepth', '1',
+    '-type', 'd'
+  }
+  
+  if exclude_hidden then
+    table.insert(args, '-not')
+    table.insert(args, '-name')
+    table.insert(args, '.*')
+  end
+  
   return Job:new({
     command = 'find',
-    args = {
-      parent_dir,
-      '-maxdepth', '1',
-      '-mindepth', '1',
-      '-type', 'd'
-    },
+    args = args,
   }):sync()
 end
 

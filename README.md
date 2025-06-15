@@ -39,8 +39,8 @@ return {
 {
   command = 'zsh --login -c nvim', -- command used to start the Neovim instance
   project_paths = { -- list of project paths
-    { vim.env.HOME .. '/Developer' }, -- all subdirectories will be included from nested tables
-    { vim.env.HOME .. '/.local/share/nvim/lazy' },
+    { vim.env.HOME .. '/Developer', exclude_hidden = true }, -- all subdirectories will be included from nested tables
+    { vim.env.HOME .. '/.local/share/nvim/lazy', exclude_hidden = false },
     vim.env.HOME .. '/.dotfiles' -- list a single directory to be included
   }
 }
