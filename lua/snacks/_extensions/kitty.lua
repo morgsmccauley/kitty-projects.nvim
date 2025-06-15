@@ -43,14 +43,13 @@ function M.projects(opts)
     items = items,
     layout = { preset = "ivy", preview = false },
     format = function(item)
-      -- Create fixed-width columns like Telescope's entry_display
       local indicator_col = string.format("%-2s", item.indicator)
       local name_col = string.format("%-" .. item.max_name_width .. "s", item.text)
       local path_col = item.path
 
       return {
-        { indicator_col,   item.data.open and 'Normal' or 'Comment' },
-        { " " .. name_col, item.data.open and 'Normal' or 'Comment' },
+        { indicator_col },
+        { " " .. name_col },
         { " " .. path_col, 'Comment' }
       }
     end,
