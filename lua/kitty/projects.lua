@@ -7,22 +7,7 @@ local state = require('kitty.state')
 local M = {}
 
 local function list_project_paths()
-  local paths = {}
-
-  for _, path in ipairs(config.options.project_paths) do
-    if type(path) == 'table' then
-      local dir = path[1]
-      local exclude_hidden = path.exclude_hidden
-
-      local sub_directories = utils.list_sub_directories(dir, exclude_hidden)
-
-      utils.merge_tables(paths, sub_directories)
-    else
-      table.insert(paths, path)
-    end
-  end
-
-  return paths
+  return utils.list_all_sub_directories(config.options.project_paths)
 end
 
 local function map_paths_to_projects(project_paths)
