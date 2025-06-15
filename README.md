@@ -14,7 +14,7 @@ Many modern terminals, including Kitty, come with most of the functionality Tmux
 
 - Seamlessly manage multiple persistant Neovim instances
 - Automatic loading of, and continouously updated, sessions
-- Telescope integration
+- Telescope and Snacks picker integration
 
 ## How it works
 
@@ -38,6 +38,7 @@ return {
 ```lua
 {
   command = 'zsh --login -c nvim', -- command used to start the Neovim instance
+  picker = 'telescope', -- picker to use: 'telescope' or 'snacks'
   project_paths = { -- list of project paths
     { vim.env.HOME .. '/Developer', exclude_hidden = true }, -- all subdirectories will be included from nested tables
     { vim.env.HOME .. '/.local/share/nvim/lazy', exclude_hidden = false },
@@ -50,9 +51,22 @@ By default, Kitty uses a non-login shell to run the command provided. If your se
 
 ## Usage
 
-Management is centred around [Telescope](https://github.com/nvim-telescope/telescope.nvim). To list all projects, bind, or execute the following:
+Management is centered around pickers (Telescope or Snacks). To list all projects:
+
+### Using Telescope (default)
 ```
 Telescope kitty projects
+```
+
+### Using Snacks
+```lua
+require('kitty').projects()
+```
+
+Or configure the picker and use:
+```lua
+require('kitty').setup({ picker = 'snacks' })
+require('kitty').projects()
 ```
 Active projects will be listed first, these are annotated similar to buffer (`:h ls`) indicators:
 - `%a` - current project
@@ -61,7 +75,7 @@ Active projects will be listed first, these are annotated similar to buffer (`:h
 
 The previous project is always listed first to allow quick switching to it.
 
-Within the Telescope picker, Projects can be managed via the following keybindings:
+Within both pickers, projects can be managed via the following keybindings:
 - `<Cr>` - Switch to project, launching it if required
 - `<C-x>` - Close project
 - `<C-r>` - Restart project, closing and relaunching

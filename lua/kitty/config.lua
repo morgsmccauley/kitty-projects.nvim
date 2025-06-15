@@ -3,9 +3,11 @@ local M = {}
 ---@class KittyOptions
 ---@field command string
 ---@field project_paths table
+---@field picker string
 local defaults = {
   session_dir = vim.fn.expand(vim.fn.stdpath('state') .. '/sessions/'),                           -- directory where session files are saved
   session_opts = { 'buffers', 'curdir', 'folds', 'help', 'tabpages', 'winsize', 'localoptions' }, -- sessionoptions used for saving
+  picker = 'telescope', -- picker to use: 'telescope' or 'snacks'
 }
 
 ---@type KittyOptions

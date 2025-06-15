@@ -8,4 +8,12 @@ function M.setup(opts)
   sessions.setup()
 end
 
+function M.projects()
+  if config.options.picker == 'snacks' then
+    require('snacks._extensions.kitty').projects()
+  else
+    vim.cmd('Telescope kitty projects')
+  end
+end
+
 return M
