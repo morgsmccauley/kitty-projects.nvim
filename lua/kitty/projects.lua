@@ -3,11 +3,12 @@ local config = require('kitty.config')
 local utils = require('kitty.utils')
 local Project = require('kitty.project')
 local state = require('kitty.state')
+local cache = require('kitty.cache')
 
 local M = {}
 
 local function list_project_paths()
-  return utils.list_all_sub_directories(config.options.project_paths)
+  return cache.get_project_paths()
 end
 
 local function map_paths_to_projects(project_paths)
@@ -117,11 +118,46 @@ function M.switch(project)
 end
 
 function M.restart(project)
+  local old_window_id = vim.env.KITTY_WINDOW_ID
   M.launch(project)
 
-  vim.defer_fn(function()
-    commands.close_window({ id = vim.env.KITTY_WINDOW_ID })
-  end, 1000)
+  -- Wait for new window to be ready before closing old one
+  local function close_old_window()
+    local attempts = 0
+    local max_attempts = 10
+    
+    local function try_close()
+      attempts = attempts + 1
+      local current_tab = commands.get_current_tab()
+      
+      if current_tab and current_tab.windows then
+        -- Check if new window with project name exists
+        local new_window_exists = false
+        for _, window in ipairs(current_tab.windows) do
+          if window.title == project.name and window.id ~= old_window_id then
+            new_window_exists = true
+            break
+          end
+        end
+        
+        if new_window_exists then
+          commands.close_window({ id = old_window_id })
+          return
+        end
+      end
+      
+      if attempts < max_attempts then
+        vim.defer_fn(try_close, 200)
+      else
+        -- Fallback: close after timeout
+        commands.close_window({ id = old_window_id })
+      end
+    end
+    
+    try_close()
+  end
+
+  vim.defer_fn(close_old_window, 100)
 end
 
 function M.get_current_project()
@@ -136,6 +172,11 @@ function M.get_current_project()
   )
 
   return projects_with_cwd[1]
+end
+
+function M.refresh()
+  cache.invalidate()
+  return M.list()
 end
 
 return M
