@@ -26,8 +26,8 @@ local function list_project_paths()
 end
 
 local function map_paths_to_projects(project_paths)
-  local all_windows = commands.list_windows()
-  local windows = all_windows[1].tabs[1].windows
+  local current_tab = commands.get_current_tab()
+  local windows = current_tab and current_tab.windows or {}
 
   local previous_project_name = state.get('previous_project_name')
 

@@ -30,6 +30,20 @@ function M.list_windows()
   return M.send_command({ 'ls' })
 end
 
+function M.get_current_tab()
+  local all_windows = M.list_windows()
+  
+  for _, os_window in ipairs(all_windows) do
+    for _, tab in ipairs(os_window.tabs) do
+      if tab.is_focused then
+        return tab
+      end
+    end
+  end
+  
+  return nil
+end
+
 function M.focus_tab(identifier)
   local match = nil
 
