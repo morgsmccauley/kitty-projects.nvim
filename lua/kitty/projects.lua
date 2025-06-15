@@ -107,6 +107,11 @@ function M.launch(project)
 end
 
 function M.switch(project)
+  -- Do nothing if already focused on this project
+  if project.is_focused then
+    return
+  end
+
   state.set({ previous_project_name = state.get('current_project_name') })
   state.set({ current_project_name = project.name })
 
