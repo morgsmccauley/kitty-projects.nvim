@@ -32,7 +32,8 @@ function M.projects(opts)
     table.insert(items, {
       text = project.name,
       indicator = indicator,
-      data = project,
+      project = project,
+      buf = '',
       path = vim.fn.fnamemodify(project.path, ':~'),
       max_name_width = max_name_width
     })
@@ -53,21 +54,28 @@ function M.projects(opts)
         { " " .. path_col, 'Comment' }
       }
     end,
+    confirm = function(picker, item)
+      picker:close()
+      kitty_projects.switch(item.project)
+    end,
+    win = {
+      input = {
+        keys = {
+          ['<C-x>'] = { 'close', mode = { 'i', 'n' } },
+          ['<C-r>'] = { 'restart', mode = { 'i', 'n' } },
+        }
+      }
+    },
     actions = {
-      default = function(item)
-        kitty_projects.switch(item.data)
+      close = function(picker, item)
+        picker:close()
+        kitty_projects.close(item.project)
       end,
-      close = function(item)
-        kitty_projects.close(item.data)
-      end,
-      restart = function(item)
-        kitty_projects.restart(item.data)
+      restart = function(picker, item)
+        picker:close()
+        kitty_projects.restart(item.project)
       end
     },
-    keys = {
-      ['<C-x>'] = 'close',
-      ['<C-r>'] = 'restart'
-    }
   }, opts))
 end
 
