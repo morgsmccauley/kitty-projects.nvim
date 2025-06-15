@@ -123,46 +123,15 @@ function M.switch(project)
 end
 
 function M.restart(project)
-  local old_window_id = vim.env.KITTY_WINDOW_ID
+  local old_window_id = project.open and project.id or nil
+
   M.launch(project)
 
-  -- Wait for new window to be ready before closing old one
-  local function close_old_window()
-    local attempts = 0
-    local max_attempts = 10
-    
-    local function try_close()
-      attempts = attempts + 1
-      local current_tab = commands.get_current_tab()
-      
-      if current_tab and current_tab.windows then
-        -- Check if new window with project name exists
-        local new_window_exists = false
-        for _, window in ipairs(current_tab.windows) do
-          if window.title == project.name and window.id ~= old_window_id then
-            new_window_exists = true
-            break
-          end
-        end
-        
-        if new_window_exists then
-          commands.close_window({ id = old_window_id })
-          return
-        end
-      end
-      
-      if attempts < max_attempts then
-        vim.defer_fn(try_close, 200)
-      else
-        -- Fallback: close after timeout
-        commands.close_window({ id = old_window_id })
-      end
-    end
-    
-    try_close()
+  if old_window_id then
+    vim.defer_fn(function()
+      commands.close_window({ id = old_window_id })
+    end, 100)
   end
-
-  vim.defer_fn(close_old_window, 100)
 end
 
 function M.get_current_project()
