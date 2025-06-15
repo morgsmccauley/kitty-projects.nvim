@@ -6,9 +6,15 @@ local log = require('kitty.log')
 local M = {}
 
 function M.send_command(args)
+  if not vim.env.KITTY_PID then
+    log.error('Not running in Kitty terminal')
+    vim.notify('kitty-projects: Not running in Kitty terminal', vim.log.levels.ERROR)
+    return nil
+  end
+
   log.info('Running command: ', args)
 
-  local raw_results = Job:new({
+  local job = Job:new({
     command = 'kitty',
     args = utils.merge_tables(
       {
@@ -17,10 +23,23 @@ function M.send_command(args)
       },
       args
     ),
-  }):sync()
+  })
+  
+  local raw_results = job:sync()
+  
+  if job.code ~= 0 then
+    log.error('Kitty command failed: ', args, 'Code: ', job.code)
+    vim.notify('kitty-projects: Command failed - is remote control enabled?', vim.log.levels.ERROR)
+    return nil
+  end
 
   if #raw_results > 0 then
-    return vim.json.decode(table.concat(raw_results))
+    local ok, result = pcall(vim.json.decode, table.concat(raw_results))
+    if not ok then
+      log.error('Failed to parse JSON response: ', table.concat(raw_results))
+      return nil
+    end
+    return result
   end
 
   return {}
@@ -33,10 +52,16 @@ end
 function M.get_current_tab()
   local all_windows = M.list_windows()
   
+  if not all_windows then
+    return nil
+  end
+  
   for _, os_window in ipairs(all_windows) do
-    for _, tab in ipairs(os_window.tabs) do
-      if tab.is_focused then
-        return tab
+    if os_window.tabs then
+      for _, tab in ipairs(os_window.tabs) do
+        if tab.is_focused then
+          return tab
+        end
       end
     end
   end
