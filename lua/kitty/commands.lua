@@ -24,9 +24,9 @@ function M.send_command(args)
       args
     ),
   })
-  
+
   local raw_results = job:sync()
-  
+
   if job.code ~= 0 then
     log.error('Kitty command failed: ', args, 'Code: ', job.code)
     vim.notify('kitty-projects: Command failed - is remote control enabled?', vim.log.levels.ERROR)
@@ -51,11 +51,11 @@ end
 
 function M.get_current_tab()
   local all_windows = M.list_windows()
-  
+
   if not all_windows then
     return nil
   end
-  
+
   for _, os_window in ipairs(all_windows) do
     if os_window.tabs then
       for _, tab in ipairs(os_window.tabs) do
@@ -65,7 +65,7 @@ function M.get_current_tab()
       end
     end
   end
-  
+
   return nil
 end
 
