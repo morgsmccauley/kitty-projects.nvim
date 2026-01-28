@@ -7,11 +7,14 @@ function M.projects(opts)
 
   local projects = kitty_projects.list()
 
-  -- Calculate max project name width for alignment
   local max_name_width = 0
+  local max_branch_width = 0
   for _, project in ipairs(projects) do
     if #project.name > max_name_width then
       max_name_width = #project.name
+    end
+    if project.branch and #project.branch > max_branch_width then
+      max_branch_width = #project.branch
     end
   end
 
@@ -35,7 +38,9 @@ function M.projects(opts)
       project = project,
       buf = '',
       path = vim.fn.fnamemodify(project.path, ':~'),
-      max_name_width = max_name_width
+      branch = project.branch,
+      max_name_width = max_name_width,
+      max_branch_width = max_branch_width
     })
   end
 
@@ -46,11 +51,13 @@ function M.projects(opts)
     format = function(item)
       local indicator_col = string.format("%-2s", item.indicator)
       local name_col = string.format("%-" .. item.max_name_width .. "s", item.text)
+      local branch_col = item.branch and string.format("%-" .. item.max_branch_width .. "s", item.branch) or string.rep(" ", item.max_branch_width)
       local path_col = item.path
 
       return {
         { indicator_col },
         { " " .. name_col },
+        { " " .. branch_col, 'String' },
         { " " .. path_col, 'Comment' }
       }
     end,

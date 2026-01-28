@@ -42,6 +42,18 @@ function M.list_sub_directories(parent_dir, exclude_hidden)
   }):sync()
 end
 
+function M.get_git_branch(path)
+  local result = Job:new({
+    command = 'git',
+    args = { '-C', path, 'rev-parse', '--abbrev-ref', 'HEAD' },
+  }):sync()
+
+  if result and result[1] then
+    return result[1]
+  end
+  return nil
+end
+
 function M.list_all_sub_directories(path_configs)
   local jobs = {}
   local all_paths = {}

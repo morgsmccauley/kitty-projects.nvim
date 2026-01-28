@@ -29,6 +29,7 @@ local function map_paths_to_projects(project_paths)
         id = (active_window or {}).id,
         name = basename,
         path = path,
+        branch = utils.get_git_branch(path),
         is_focused = (active_window or {}).is_focused or false,
         was_focused = previous_project_name == basename,
         open = active_window ~= nil

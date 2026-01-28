@@ -14,10 +14,14 @@ local list_kitty_projects = function(opts)
   local make_finder = function()
     local projects = kitty_projects.list()
 
-    local max_width = 0
+    local max_name_width = 0
+    local max_branch_width = 0
     for _, project in ipairs(projects) do
-      if #project.name > max_width then
-        max_width = #project.name
+      if #project.name > max_name_width then
+        max_name_width = #project.name
+      end
+      if project.branch and #project.branch > max_branch_width then
+        max_branch_width = #project.branch
       end
     end
 
@@ -25,7 +29,8 @@ local list_kitty_projects = function(opts)
       separator = " ",
       items = {
         { width = 2 },
-        { width = max_width },
+        { width = max_name_width },
+        { width = max_branch_width },
         { remaining = true },
       },
     }
@@ -50,6 +55,7 @@ local list_kitty_projects = function(opts)
               return displayer({
                 indicator,
                 project.name,
+                { project.branch or '', 'TelescopeResultsIdentifier' },
                 { vim.fn.fnamemodify(project.path, ':~'), 'TelescopeResultsComment' }
               })
             end
